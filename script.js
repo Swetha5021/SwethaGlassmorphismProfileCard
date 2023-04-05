@@ -1,13 +1,5 @@
 var VanillaTilt = (function () {
     'use strict';
-    
-    /**
-     * Created by Sergiu Șandor (micku7zu) on 1/27/2017.
-     * Original idea: https://github.com/gijsroge/tilt.js
-     * MIT License.
-     * Version 1.7.0
-     */
-    
     class VanillaTilt {
       constructor(element, settings = {}) {
         if (!(element instanceof Node)) {
@@ -15,28 +7,19 @@ var VanillaTilt = (function () {
         }
     
         this.width = null;
-        this.height = null;
-        this.clientWidth = null;
+        this.height = null; this.clientWidth = null;
         this.clientHeight = null;
-        this.left = null;
-        this.top = null;
-    
-        // for Gyroscope sampling
-        this.gammazero = null;
+        this.left = null; this.top = null;
+            this.gammazero = null;
         this.betazero = null;
         this.lastgammazero = null;
         this.lastbetazero = null;
-    
         this.transitionTimeout = null;
         this.updateCall = null;
         this.event = null;
-    
         this.updateBind = this.update.bind(this);
-        this.resetBind = this.reset.bind(this);
-    
-        this.element = element;
+        this.resetBind = this.reset.bind(this);        this.element = element;
         this.settings = this.extendSettings(settings);
-    
         this.reverse = this.settings.reverse ? -1 : 1;
         this.glare = VanillaTilt.isSettingTrue(this.settings.glare);
         this.glarePrerender = VanillaTilt.isSettingTrue(this.settings["glare-prerender"]);
@@ -53,19 +36,13 @@ var VanillaTilt = (function () {
         if (this.fullPageListening) {
           this.updateClientSize();
         }
-    
         this.addEventListeners();
         this.updateInitialPosition();
       }
-    
       static isSettingTrue(setting) {
         return setting === "" || setting === true || setting === 1;
       }
     
-      /**
-       * Method returns element what will be listen mouse events
-       * @return {Node}
-       */
       getElementListener() {
         if (this.fullPageListening) {
           return window.document;
@@ -86,10 +63,6 @@ var VanillaTilt = (function () {
         return this.element;
       }
     
-      /**
-       * Method set listen methods for this.elementListener
-       * @return {Node}
-       */
       addEventListeners() {
         this.onMouseEnterBind = this.onMouseEnter.bind(this);
         this.onMouseMoveBind = this.onMouseMove.bind(this);
@@ -109,10 +82,6 @@ var VanillaTilt = (function () {
           window.addEventListener("deviceorientation", this.onDeviceOrientationBind);
         }
       }
-    
-      /**
-       * Method remove event listeners from current this.elementListener
-       */
       removeEventListeners() {
         this.elementListener.removeEventListener("mouseenter", this.onMouseEnterBind);
         this.elementListener.removeEventListener("mouseleave", this.onMouseLeaveBind);
@@ -125,9 +94,7 @@ var VanillaTilt = (function () {
         if (this.glare || this.fullPageListening) {
           window.removeEventListener("resize", this.onWindowResizeBind);
         }
-      }
-    
-      destroy() {
+      }      destroy() {
         clearTimeout(this.transitionTimeout);
         if (this.updateCall !== null) {
           cancelAnimationFrame(this.updateCall);
@@ -226,19 +193,16 @@ var VanillaTilt = (function () {
     
         this.resetGlare();
       }
-    
       resetGlare() {
         if (this.glare) {
           this.glareElement.style.transform = "rotate(180deg) translate(-50%, -50%)";
           this.glareElement.style.opacity = "0";
         }
       }
-    
       updateInitialPosition() {
         if (this.settings.startX === 0 && this.settings.startY === 0) {
           return;
         }
-    
         this.onMouseEnter();
     
         if (this.fullPageListening) {
@@ -253,14 +217,12 @@ var VanillaTilt = (function () {
           };
         }
     
-    
         let backupScale = this.settings.scale;
         this.settings.scale = 1;
         this.update();
         this.settings.scale = backupScale;
         this.resetGlare();
       }
-    
       getValues() {
         let x, y;
     
@@ -287,7 +249,6 @@ var VanillaTilt = (function () {
           angle: angle
         };
       }
-    
       updateElementPosition() {
         let rect = this.element.getBoundingClientRect();
     
@@ -316,11 +277,6 @@ var VanillaTilt = (function () {
     
         this.updateCall = null;
       }
-    
-      /**
-       * Appends the glare element (if glarePrerender equals false)
-       * and sets the default style
-       */
       prepareGlare() {
         // If option pre-render is enabled we assume all html/css is present for an optimal glare effect.
         if (!this.glarePrerender) {
@@ -341,7 +297,6 @@ var VanillaTilt = (function () {
         if (this.glarePrerender) {
           return;
         }
-    
         Object.assign(this.glareElementWrapper.style, {
           "position": "absolute",
           "top": "0",
@@ -351,7 +306,6 @@ var VanillaTilt = (function () {
           "overflow": "hidden",
           "pointer-events": "none"
         });
-    
         Object.assign(this.glareElement.style, {
           "position": "absolute",
           "top": "50%",
@@ -384,7 +338,6 @@ var VanillaTilt = (function () {
           || document.documentElement.clientHeight
           || document.body.clientHeight;
       }
-    
       onWindowResize() {
         this.updateGlareSize();
         this.updateClientSize();
@@ -403,29 +356,6 @@ var VanillaTilt = (function () {
         }, this.settings.speed);
     
       }
-    
-      /**
-       * Method return patched settings of instance
-       * @param {boolean} settings.reverse - reverse the tilt direction
-       * @param {number} settings.max - max tilt rotation (degrees)
-       * @param {startX} settings.startX - the starting tilt on the X axis, in degrees. Default: 0
-       * @param {startY} settings.startY - the starting tilt on the Y axis, in degrees. Default: 0
-       * @param {number} settings.perspective - Transform perspective, the lower the more extreme the tilt gets
-       * @param {string} settings.easing - Easing on enter/exit
-       * @param {number} settings.scale - 2 = 200%, 1.5 = 150%, etc..
-       * @param {number} settings.speed - Speed of the enter/exit transition
-       * @param {boolean} settings.transition - Set a transition on enter/exit
-       * @param {string|null} settings.axis - What axis should be disabled. Can be X or Y
-       * @param {boolean} settings.glare - What axis should be disabled. Can be X or Y
-       * @param {number} settings.max-glare - the maximum "glare" opacity (1 = 100%, 0.5 = 50%)
-       * @param {boolean} settings.glare-prerender - false = VanillaTilt creates the glare elements for you, otherwise
-       * @param {boolean} settings.full-page-listening - If true, parallax effect will listen to mouse move events on the whole document, not only the selected element
-       * @param {string|object} settings.mouse-event-element - String selector or link to HTML-element what will be listen mouse events
-       * @param {boolean} settings.reset - false = If the tilt effect has to be reset on exit
-       * @param {gyroscope} settings.gyroscope - Enable tilting by deviceorientation events
-       * @param {gyroscopeSensitivity} settings.gyroscopeSensitivity - Between 0 and 1 - The angle at which max tilt position is reached. 1 = 90deg, 0.5 = 45deg, etc..
-       * @param {gyroscopeSamples} settings.gyroscopeSamples - How many gyroscope moves to decide the starting position.
-       */
       extendSettings(settings) {
         let defaultSettings = {
           reverse: false,
@@ -494,12 +424,7 @@ var VanillaTilt = (function () {
     }
     
     if (typeof document !== "undefined") {
-      /* expose the class to window */
       window.VanillaTilt = VanillaTilt;
-    
-      /**
-       * Auto load
-       */
       VanillaTilt.init(document.querySelectorAll("[data-tilt]"));
     }
     
