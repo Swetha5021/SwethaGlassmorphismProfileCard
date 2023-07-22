@@ -2,17 +2,21 @@
 * {
   font-family: 'Times New Roman', Times, serif;
 }
+
 .sk{
     color: #ffffff;
     font-family: 'Times New Roman', Times, serif;
     text-decoration: none;
 }
+
 #pp{
     text-decoration: underline;
 }
+
 #pf{
     text-decoration: none;
 }
+
 body {
   margin: 0;
   padding: 0;
